@@ -6,7 +6,7 @@
 Python3 must be already installed.
 
 ```shell
-git clone 
+git clone https://github.com/innyshka/improvs-test-tas.git
 cd improvs_test_task
 python3 -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
