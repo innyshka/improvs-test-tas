@@ -7,6 +7,10 @@ ENV PYTHONBUFFERED 1
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && apt-get clean \
+RUN pip install psycopg2
 COPY requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt

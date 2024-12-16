@@ -21,7 +21,7 @@ SECRET_KEY = env.str('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', 'localhost:8000',])
 
 
 
@@ -33,9 +33,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    'corsheaders',
 
     'apps.user',
     'apps.note',
@@ -44,23 +46,31 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'improvs_test_task.middle.DisableCSRFMiddleware',
 ]
 
 ROOT_URLCONF = 'improvs_test_task.urls'
 
 WSGI_APPLICATION = 'improvs_test_task.wsgi.application'
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": env.str("BASE_DB_HOST"),
+        "NAME": env.str("BASE_DB_NAME"),
+        "USER": env.str("BASE_DB_USER"),
+        "PASSWORD":  env.str("BASE_DB_PASSWORD"),
+        "PORT": env.str("BASE_DB_PORT"),
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -88,7 +98,9 @@ USE_TZ = True
 
 
 STATIC_URL = 'static/'
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -122,3 +134,38 @@ CACHES = {
     }
 }
 
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+
+SWAGGER_SETTINGS = {
+    'DEFAULT_INFO': 'improvs_test_task.urls.schema_info',
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        }
+    },
+    'DEFAULT_SECURITY': [
+        {'Bearer': []}
+    ],
+}
