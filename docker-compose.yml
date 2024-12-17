@@ -6,6 +6,8 @@ services:
 
     volumes:
       - .:/app
+    networks:
+      - backend
     ports:
       - "8000:8000"
     depends_on:
@@ -13,6 +15,8 @@ services:
       - db
   redis:
     image: "redis:alpine"
+    networks:
+      - backend
 
   db:
     image: postgres:15
@@ -23,6 +27,8 @@ services:
       POSTGRES_USER: improvs_test_task_dev
       POSTGRES_PASSWORD: improvs_test_task_dev
       POSTGRES_INITDB_ARGS: "--auth-host=md5 --auth-local=md5"
+    networks:
+      - backend
     ports:
       - "5432:5432"
 
@@ -30,5 +36,8 @@ services:
     volumes:
       - ./custom_scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db_data:/var/lib/postgresql/data
+
 volumes:
   db_data:
+networks:
+  backend:
